@@ -22,6 +22,7 @@ def euclidean_distance(a, b):
     
     return math.sqrt(math.pow(x2-x1, 2) + math.pow(y2-y1, 2))
 
+# reset the values of all nodes
 def reset_values(grid):
     
     for x in grid:
@@ -30,6 +31,7 @@ def reset_values(grid):
             
             y.set_value(0)
             
+# reset the root nodes of all nodes            
 def reset_root(grid):
     
     for x in grid:
@@ -38,6 +40,7 @@ def reset_root(grid):
             
             y.set_root(None)
             
+# return the length of the path
 def path_length(grid):
     
     count = 0
@@ -52,14 +55,19 @@ def path_length(grid):
                 
     return count
 
+# reconstructs the path from the end node to the start node
 def reconstruct_path(came_from, current, draw):
     
+    # check through all root nodes from current
     while current in came_from:
         
+        # change current node to the root node of current
         current = came_from[current]
         
+        # if current is not start
         if (not current.get_start()):
             
+            # draw the path
             current.draw_path()
             
             draw()
@@ -80,46 +88,61 @@ def bfs (draw, grid, start, end, index):
     possible_moves.put(start)
     visited.append(start)
     
+    # while the queue is not empty
     while True:
         
+        # if the queue is empty, return no path
         if (count == len(visited)):
             
             reset_root(grid)
             
             return ((count, False, path_length(grid)))
         
+        # if the current node is the end node, return path
         for neighbour in visited[count].neighbours:
             
             if (neighbour.get_root() is None):
                 
                     neighbour.set_root(visited[count])
-                    
+
+            # set the root node to the first neighbour node        
             root = neighbour
             
+            # if the neighbour is the end node, return path
             if (neighbour.get_end()):
                 
+                # while the root node is not the start node
                 while (root.get_root().get_pos() != start.get_pos()):
                     
+                    # draw the path
                     root.get_root().draw_path()
                     
+                    # set the root node to the previous node
                     root = root.get_root()
 
+                # reset the root node
                 reset_root(grid)
                 
+                # return the path (path found)
                 return ((count, True, path_length(grid)))
                     
+            # if the neighbour is not the end node and not already searched, add it to the queue
             elif (not neighbour.opened_spot()) and not neighbour.get_value():
                     
+                # add the neighbour to the queue    
                 if (not neighbour.get_start()):
                     
                     neighbour.draw_opened()
                     
+                # add the neighbour to the queue    
                 visited.append(neighbour)
                 
                 #print(neighbour.get_pos(), neighbour.get_root().get_pos())
                 
                 draw()
                 #time.sleep(0.1)
+
+        # increment the count        
         count += 1
         
     #print(t_visited)
@@ -147,12 +170,16 @@ def astar_algorithm(draw, grid, start, end):
 
     open_set_hash = {start}
 
+    # while the queue is not empty
     while not open_set.empty():
 
+        # set current node to the first node in the queue
         current = open_set.get()[2]
         
+        # remove the current node from the queue
         open_set_hash.remove(current)
 
+        # if the current node is the end node, return path
         if current == end:
             
             reconstruct_path(came_from, end, draw)
@@ -163,10 +190,12 @@ def astar_algorithm(draw, grid, start, end):
             
             return ((count, True, path_length(grid)))
 
+        # for all neighbours of current node
         for neighbour in current.neighbours:
             
             temp_g_score = g_score[current] + 1
 
+            # if the temp g score is less than the g score of the neighbour, change the g score of the neighbour
             if temp_g_score < g_score[neighbour]:
                 
                 came_from[neighbour] = current
@@ -205,6 +234,7 @@ def dfs(draw, grid, start, end, index):
     
     cur_pos = start
         
+    # node search limit (time constraint)    
     while (index <= 100000):
         
         # initial temp value
@@ -215,6 +245,7 @@ def dfs(draw, grid, start, end, index):
         # Look at the possible neighbours of current position
         for neighbour in cur_pos.neighbours:
             
+            # if the neighbour has no root, set the root to the current position
             if (neighbour.get_root() is None):
                 
                     neighbour.set_root(cur_pos)
@@ -229,6 +260,7 @@ def dfs(draw, grid, start, end, index):
             # searchs
             count += 1
             
+            # if the neighbour is not already searched, apart of the current path, the end, or the start, search it
             if (not neighbour.get_path() and not neighbour.get_start() and not neighbour.get_end() and not neighbour.closed_spot()):
                 
                 neighbour.draw_opened()
@@ -240,6 +272,7 @@ def dfs(draw, grid, start, end, index):
                 
                 temp_pos = neighbour
                 
+            # if the neighbour is the end node, return path    
             if (euclidean_distance(cur_pos.get_pos(), end.get_pos()) == 0):
             
                 #print(count)
@@ -250,11 +283,14 @@ def dfs(draw, grid, start, end, index):
             
                 return ((count, True, path_length(grid)))
                 
+            # backtrack to root node    
             if (temp_pos == cur_pos.get_root()):
                 
                 index += 500;
                 
                 cur_pos = temp_pos
+
+            # backtrack to root node    
             else:
                 
                 cur_pos = temp_pos
@@ -269,8 +305,78 @@ def dfs(draw, grid, start, end, index):
             
         index += 1
         
+    reset_root(grid)
+    reset_values(grid)
+    return ((count, False, path_length(grid)))
+
+# depth first search but with unweighted graphs
+# the algorithm looks at child nodes with connected edges with the parent node
+# if a parent node has no valid child nodes, it will return to the previous node
+
+def dfs_unweighted(draw, grid, start, end, index):
+    count = 0
+
+    cur_pos = start
+
+    # node search limit (time constraint)
+    while (index <= 50):
+
+        for neighbour in cur_pos.neighbours:
+
+            # if the neighbour has no root, set the root to the current position
+            if (neighbour.get_root() is None):
                 
+                    neighbour.set_root(cur_pos)
+            
+            #print(neighbour.get_pos(), neighbour.get_value())
+            
+            # searchs
+            count += 1
+            
+            # if the neighbour is not already searched, apart of the current path, the end, or the start, search it
+            if (not neighbour.get_path() and not neighbour.get_start() and not neighbour.get_end() and not neighbour.closed_spot()):
+                
+                neighbour.draw_opened()
+                
+                temp_pos = neighbour
+                
+            # if the neighbour is the end node, return path    
+            if (euclidean_distance(cur_pos.get_pos(), end.get_pos()) == 0):
+            
+                #print(count)
+            
+                reset_values(grid)
+                
+                reset_root(grid)
+            
+                return ((count, True, path_length(grid)))
+                
+            # backtrack to root node    
+            if (temp_pos == cur_pos.get_root()):
+                
+                index += 500;
+                
+                cur_pos = temp_pos
+
+            # backtrack to root node    
+            else:
+                
+                cur_pos = temp_pos
+        
+        draw()
+        
+        cur_pos.add_value()
+        
+        if (not cur_pos.get_end() and not cur_pos.get_start() and not cur_pos.closed_spot()):
+            
+            cur_pos.draw_path()
+            
+        index += 1
         
     reset_root(grid)
     reset_values(grid)
     return ((count, False, path_length(grid)))
+
+                
+                
+

@@ -4,12 +4,24 @@ Created on Thu Sep  1 21:11:34 2022
 
 @author: danny
 """
+import os
 import pygame
+import pickle
 import random as r
 import pathfinder as pf
 #import clock
 
 pygame.init()
+
+folder_name = "grid saves"
+file_name = "grid_data.pickle"
+
+# Check if the folder exists, and if not, create it
+if not os.path.exists(folder_name):
+    os.makedirs(folder_name)
+
+# Specify the full path to the pickle file
+file_path = os.path.join(folder_name, file_name)
 
 # Colours
 white = (255, 255, 255)
@@ -56,6 +68,35 @@ def return_neighbours(grid):
         for y in x:
             print(list(y.neighbours))
     
+# Save Grid
+def save_grid(grid):
+    # Grid object to save
+    grid_to_save = grid  # Replace 'grid' with your actual grid object
+
+    try:
+        with open(file_path, 'wb') as file:
+            pickle.dump(grid_to_save, file)
+        print(f"Grid saved to {file_path}")
+    except Exception as e:
+        print(f"Error saving grid: {e}")
+
+# Load Grid
+def load_grid():
+    # Combine folder_name and file_name to get the full path to the pickle file
+    file_path = os.path.join(folder_name, file_name)
+
+    print(file_path)
+    try:
+        with open(file_path, 'rb') as file:
+            grid = pickle.load(file)
+        print(f"Grid loaded from {file_path}")
+        return grid
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+    except Exception as e:
+        print(f"Error loading grid: {e}")
+    return None
+
 # Button
 class button():
     
@@ -116,6 +157,8 @@ buttons.append(button("Simulate", 200, 40, (width+100, width-700), 5))
 buttons.append(button("Change", 200, 40, (width+100, width-650), 5))
 buttons.append(button("Clear", 200, 40, (width+100, width-600), 5))
 buttons.append(button("Reset", 200, 40, (width+100, width-550), 5))
+buttons.append(button("Save", 200, 40, (width+100, width-500), 5))
+buttons.append(button("Load", 200, 40, (width+100, width-450), 5))
     
 # Square object class
 class square():
@@ -251,6 +294,8 @@ def draw_grid(Game, rows, width):
 # draw on the grid
 def draw(Game, grid, rows, width):
     
+    # print(rows, width)
+
     Game.fill(white)
 
     for x in grid:
@@ -318,7 +363,7 @@ def main(Game, rows, width, generate, g_type):
     
     grid = make_grid(rows, width)
     
-    algorithm = ["DFS", "BFS", "A_STAR"]
+    algorithm = ["DFS", "BFS", "A_STAR", "U_DFS"]
     
     i = algorithm.index(g_type)
 
@@ -444,14 +489,25 @@ def main(Game, rows, width, generate, g_type):
                 else:
                     
                     print("No path found")
+            
+            elif (i == 3):
+
+                count, result, length = pf.dfs_unweighted(lambda: draw(Game, grid, rows, width), grid, start, end, 0)
+                
+                if (result):
                     
+                    print(f"Unweighted Depth-First Search, {count} cells searched, length: {length}")
+                
+                else:
+                    
+                    print("No path found")
             else:
                 
                 i == 0
         
         elif function(buttons[1]):
             
-            if (0 <= i + 1 <= 2):
+            if (0 <= i + 1 <= 3):
                         
                 i += 1
                 #print(i)
@@ -477,6 +533,15 @@ def main(Game, rows, width, generate, g_type):
                 
                 initialize_game(Game, grid)
                     
+        elif (function(buttons[4])):
+            save_grid(grid)
+        
+        elif (function(buttons[5])):
+
+            grid = load_grid()
+
+            draw(Game, grid, rows, width)
+
         #clock.tick(20)
                     
     pygame.quit()
