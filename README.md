@@ -147,9 +147,9 @@ Handles button interactions and returns whether a button is clicked.
 
 The main function that sets up the game, handles user input, and runs pathfinding algorithms based on user interactions.
 
-### generate_maze(grid)
+## generate_maze(grid)
 
-## Set Up Helper Functions
+### Set Up Helper Functions
 
 - **find_neighbours_maze(i, j):**
   Returns a list of neighboring coordinates for a given position (i, j).
@@ -157,16 +157,16 @@ The main function that sets up the game, handles user input, and runs pathfindin
 - **is_valid(i, j, m_row):**
   Checks if a given coordinate (i, j) is within the grid boundaries.
 
-## Initialization
+### Initialization
 
 - **Reset all squares in the grid to walls.**
 
-## Randomly Choose a Starting Square
+### Randomly Choose a Starting Square
 
 - Pick a random starting square (currently set at a fixed position for reproducibility).
 - Make the starting square a passage.
 
-## Randomized Prim's Algorithm
+### Randomized Prim's Algorithm
 
 - Create a list called frontier to store frontier cells.
 - Create a list called path and add the starting square to it.
@@ -180,11 +180,11 @@ The main function that sets up the game, handles user input, and runs pathfindin
     - Find the neighbors of the chosen square and add them to the frontier.
     - Add the chosen square to the path.
 
-## Clean Up
+### Clean Up
 
 - Clear the neighbors list for each square in the grid.
 
-## Return the Modified Grid
+### Return the Modified Grid
 
 The function returns the modified grid with the generated maze.
 
