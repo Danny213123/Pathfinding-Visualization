@@ -98,7 +98,7 @@ def bfs (draw, grid, start, end, index):
             
             return ((count, False, path_length(grid)))
         
-        # if the current node is the end node, return path
+        # run through all opened nodes incrementally by 1
         for neighbour in visited[count].neighbours:
             
             if (neighbour.get_root() is None):
@@ -248,7 +248,7 @@ def dfs(draw, grid, start, end, index):
             # if the neighbour has no root, set the root to the current position
             if (neighbour.get_root() is None):
                 
-                    neighbour.set_root(cur_pos)
+                neighbour.set_root(cur_pos)
             
             # if the euclidean value of neighbour is greater than set value, change value
             if (euclidean_distance(neighbour.get_pos(), end.get_pos()) > neighbour.get_value()):
@@ -313,70 +313,54 @@ def dfs(draw, grid, start, end, index):
 # the algorithm looks at child nodes with connected edges with the parent node
 # if a parent node has no valid child nodes, it will return to the previous node
 
+from queue import LifoQueue
+
 def dfs_unweighted(draw, grid, start, end, index):
+    visited = []
+    stack = LifoQueue()
+    
     count = 0
 
-    cur_pos = start
+    stack.put(start)
+    visited.append(start)
+    
+    # while the stack is not empty
+    while not stack.empty():
+        # pop the top node from the stack
+        current_node = stack.get()
 
-    # node search limit (time constraint)
-    while (index <= 50):
+        # if the stack is empty, return no path
+        if count == len(visited):
+            reset_root(grid)
+            return count, False, path_length(grid)
 
-        for neighbour in cur_pos.neighbours:
+        # run through all opened nodes incrementally by 1
+        for neighbour in current_node.neighbours:
+            if neighbour.get_root() is None:
+                neighbour.set_root(current_node)
 
-            # if the neighbour has no root, set the root to the current position
-            if (neighbour.get_root() is None):
-                
-                    neighbour.set_root(cur_pos)
+            root = neighbour
             
-            #print(neighbour.get_pos(), neighbour.get_value())
-            
-            # searchs
-            count += 1
-            
-            # if the neighbour is not already searched, apart of the current path, the end, or the start, search it
-            if (not neighbour.get_path() and not neighbour.get_start() and not neighbour.get_end() and not neighbour.closed_spot()):
-                
-                neighbour.draw_opened()
-                
-                temp_pos = neighbour
-                
-            # if the neighbour is the end node, return path    
-            if (euclidean_distance(cur_pos.get_pos(), end.get_pos()) == 0):
-            
-                #print(count)
-            
-                reset_values(grid)
-                
+            # if the neighbour is the end node, return path
+            if neighbour.get_end():
+                while root.get_root().get_pos() != start.get_pos():
+                    root.get_root().draw_path()
+                    root = root.get_root()
+
                 reset_root(grid)
-            
-                return ((count, True, path_length(grid)))
-                
-            # backtrack to root node    
-            if (temp_pos == cur_pos.get_root()):
-                
-                index += 500;
-                
-                cur_pos = temp_pos
+                return count, True, path_length(grid)
 
-            # backtrack to root node    
-            else:
-                
-                cur_pos = temp_pos
-        
-        draw()
-        
-        cur_pos.add_value()
-        
-        if (not cur_pos.get_end() and not cur_pos.get_start() and not cur_pos.closed_spot()):
-            
-            cur_pos.draw_path()
-            
-        index += 1
-        
+            # if the neighbour is not the end node and not already searched, add it to the stack
+            elif not neighbour.opened_spot() and not neighbour.get_value():
+                if not neighbour.get_start():
+                    neighbour.draw_opened()
+
+                stack.put(neighbour)
+                visited.append(neighbour)
+
+                draw()
+
+        count += 1
+
     reset_root(grid)
-    reset_values(grid)
-    return ((count, False, path_length(grid)))
-
-                
-                
-
+    return count, False, path_length(grid)
