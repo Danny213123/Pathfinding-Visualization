@@ -67,3 +67,83 @@ DFS for weighted graphs. It looks at child nodes with connected edges to the par
 ### Depth-First Search (DFS) with Unweighted Graphs
 
 DFS for unweighted graphs. It looks at child nodes with connected edges to the parent node and picks the child node with the lowest Euclidean distance to the end position. If a parent node has no valid child nodes, it returns to the previous node.
+
+## Classes
+
+### `square` Class
+
+Represents a square in the grid.
+
+**Attributes:**
+- `row` and `col`: Row and column indices of the square.
+- `x` and `y`: Coordinates of the square.
+- `width`: Width of the square.
+- `total_rows`: Total number of rows in the grid.
+- `colour`: Color of the square.
+- `value`: A numerical value associated with the square.
+- `neighbours`: List of neighboring squares.
+- `root`: The root node of the square (used in pathfinding algorithms).
+
+### `button` Class
+
+Represents a button for user interaction.
+
+**Attributes:**
+- `pressed`: Indicates whether the button is pressed.
+- `elevation` and `dynamic_elevation`: Control button elevation.
+- `original_y_pos`: Original y-position of the button.
+- `top_rect` and `bottom_rect`: Rectangles representing the button.
+- `top_color` and `bottom_color`: Colors of the button.
+- `text_surf` and `text_rect`: Surface and rectangle for the button's text.
+
+**Methods:**
+- `draw()`: Draws the button.
+- `return_click()`: Returns whether the button is clicked.
+- `check_click()`: Checks if the button is clicked.
+
+## Functions
+
+### `find_neighbours(i, j)` Function
+
+Returns a list of neighboring coordinates for a given position `(i, j)`.
+
+### `is_valid(i, j, m_row)` Function
+
+Checks if a given coordinate `(i, j)` is within the grid boundaries.
+
+### `return_neighbours(grid)` Function
+
+Prints the neighbors of each square in the grid.
+
+### `save_grid(grid)` and `load_grid()` Functions
+
+Save and load the grid state using Pickle.
+
+### `draw_grid(Game, rows, width)` Function
+
+Draws the grid lines on the game window.
+
+### `draw(Game, grid, rows, width)` Function
+
+Draws the entire grid, including squares and grid lines.
+
+### `get_clicked_pos(pos, rows, width)` Function
+
+Converts mouse click position to grid coordinates.
+
+### `initialize_game(Game, grid)` Function
+
+Initializes the game by randomly drawing walls on the grid.
+
+### `wipe_grid(Game, grid)` Function
+
+Resets the grid by clearing previously drawn paths and walls.
+
+### `function(button)` Function
+
+Handles button interactions and returns whether a button is clicked.
+
+### `main(Game, rows, width, generate, g_type)` Function
+
+The main function that sets up the game, handles user input, and runs pathfinding algorithms based on user interactions.
+
