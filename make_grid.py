@@ -9,6 +9,7 @@ import pygame
 import pickle
 import random as r
 import pathfinder as pf
+import generate_maze as gm
 #import clock
 
 pygame.init()
@@ -50,6 +51,10 @@ def find_neighbours(i, j):
     
     #return [(i+1,j), (i-1,j), (i,j+1), (i,j-1), (i+1,j+1), (i-1,j-1), (i-1,j+1), (i+1,j-1)]
     return [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]
+
+def find_neighbours_maze(i, j):
+    
+    return [((i-1, j),(i-2,j)), ((i+1,j),(i+2,j)), ((i, j-1),(i,j-2)), ((i, j+1),(i,j+2))]
 
 # Check if neighbour x_pos and y_pos within boundaries
 def is_valid(i, j, m_row):
@@ -159,6 +164,7 @@ buttons.append(button("Clear", 200, 40, (width+100, width-600), 5))
 buttons.append(button("Reset", 200, 40, (width+100, width-550), 5))
 buttons.append(button("Save", 200, 40, (width+100, width-500), 5))
 buttons.append(button("Load", 200, 40, (width+100, width-450), 5))
+buttons.append(button("Generate Maze", 200, 40, (width+100, width-400), 5))
     
 # Square object class
 class square():
@@ -250,11 +256,24 @@ class square():
             if (is_valid(look_row, look_col, self.total_rows)):
                 if (not matrix[look_row][look_col].get_wall()):
                     self.neighbours.append(matrix[look_row][look_col])
+
+    def find_nearby_spots_maze(self, matrix):
+        self.neighbours = []
+        
+        for k in find_neighbours_maze(self.row, self.col):
+            look_row, look_col = k[1]
+            adjacent_row, adjacent_col = k[0]
+            
+            if (is_valid(look_row, look_col, self.total_rows)):
+                if (matrix[look_row][look_col].get_wall() and matrix[adjacent_row][adjacent_col].get_wall()):
+                    matrix[look_row][look_col].set_root(matrix[adjacent_row][adjacent_col])
+                    matrix[adjacent_row][adjacent_col].set_root(matrix[self.row][self.col])
+                    self.neighbours.append(matrix[look_row][look_col])
                 
     # Less than operator
     def __lt__ (self, other):
         return False
-    
+
 # Creates square objects, puts it in a grid
 def make_grid(rows, width):
     
@@ -363,7 +382,7 @@ def main(Game, rows, width, generate, g_type):
     
     grid = make_grid(rows, width)
     
-    algorithm = ["DFS", "BFS", "A_STAR", "U_DFS"]
+    algorithm = ["WEIGHTED_DFS", "BFS", "A_STAR", "U_DFS"]
     
     i = algorithm.index(g_type)
 
@@ -505,6 +524,7 @@ def main(Game, rows, width, generate, g_type):
                 
                 i == 0
         
+        # change algorithm
         elif function(buttons[1]):
             
             if (0 <= i + 1 <= 3):
@@ -517,10 +537,12 @@ def main(Game, rows, width, generate, g_type):
                 
             print(f"algorithm changed to {algorithm[i]}")
             
+        # reset grid
         elif function(buttons[2]):
             
             wipe_grid(Game, grid)
             
+        # generate new grid
         elif (function(buttons[3])):
             
             start = None
@@ -532,15 +554,25 @@ def main(Game, rows, width, generate, g_type):
             if(generate):
                 
                 initialize_game(Game, grid)
-                    
+
+        # save grid    
         elif (function(buttons[4])):
+
             save_grid(grid)
         
+        # load grid
         elif (function(buttons[5])):
 
             grid = load_grid()
 
             draw(Game, grid, rows, width)
+
+        # generate maze
+        elif (function(buttons[6])):
+
+            start, end = None, None
+
+            grid = gm.generate_maze(grid)
 
         #clock.tick(20)
                     

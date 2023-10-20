@@ -15,4 +15,4 @@ width = 600
 Game = pygame.display.set_mode((1200, width))
 pygame.display.set_caption("Game Test")
 
-gm.main(Game, rows, width, True, "A_STAR")
+gm.main(Game, rows, width, True, "U_DFS")

@@ -235,7 +235,7 @@ def dfs(draw, grid, start, end, index):
     cur_pos = start
         
     # node search limit (time constraint)    
-    while (index <= 100000):
+    while (index <= 100000000):
         
         # initial temp value
         value = float ("inf")
@@ -364,3 +364,8 @@ def dfs_unweighted(draw, grid, start, end, index):
 
     reset_root(grid)
     return count, False, path_length(grid)
+
+
+                
+                
+
