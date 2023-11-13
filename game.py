@@ -9,8 +9,8 @@ if __name__ == "__main__":
     import make_grid as gm
 import pygame
 
-rows = 30
-width = 600
+rows = 31
+width = 620
 
 Game = pygame.display.set_mode((1200, width))
 pygame.display.set_caption("Game Test")
