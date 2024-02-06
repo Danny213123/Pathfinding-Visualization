@@ -17,7 +17,7 @@ def game_of_life(grid, draw, clock):
 
     return grid
 
-def next_generation (grid, draw):
+def next_generation (grid, draw) -> None:
     row, col = len(grid), len(grid[0])
 
     for i in range(row):
