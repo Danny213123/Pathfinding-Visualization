@@ -10,6 +10,7 @@ import pickle
 import random as r
 import pathfinder as pf
 import generate_maze as gm
+import game_of_life as gol
 #import clock
 
 pygame.init()
@@ -51,6 +52,10 @@ def find_neighbours(i, j):
     
     #return [(i+1,j), (i-1,j), (i,j+1), (i,j-1), (i+1,j+1), (i-1,j-1), (i-1,j+1), (i+1,j-1)]
     return [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]
+
+def find_neighbours_gol(i, j):
+
+    return [(i+1,j), (i-1,j), (i,j+1), (i,j-1), (i+1,j+1), (i-1,j-1), (i-1,j+1), (i+1,j-1)]
 
 def find_neighbours_maze(i, j):
     
@@ -165,6 +170,7 @@ buttons.append(button("Reset", 200, 40, (width+100, width-550), 5))
 buttons.append(button("Save", 200, 40, (width+100, width-500), 5))
 buttons.append(button("Load", 200, 40, (width+100, width-450), 5))
 buttons.append(button("Generate Maze", 200, 40, (width+100, width-400), 5))
+buttons.append(button("Game of Life", 200, 40, (width+100, width-350), 5))
     
 # Square object class
 class square():
@@ -268,6 +274,16 @@ class square():
                 if (matrix[look_row][look_col].get_wall() and matrix[adjacent_row][adjacent_col].get_wall()):
                     matrix[look_row][look_col].set_root(matrix[adjacent_row][adjacent_col])
                     matrix[adjacent_row][adjacent_col].set_root(matrix[self.row][self.col])
+                    self.neighbours.append(matrix[look_row][look_col])
+
+    def find_nearby_spots_gol(self, matrix):
+        self.neighbours = []
+        
+        for k in find_neighbours_gol(self.row, self.col):
+            look_row, look_col = k
+            
+            if (is_valid(look_row, look_col, self.total_rows)):
+                if (matrix[look_row][look_col].get_wall()):
                     self.neighbours.append(matrix[look_row][look_col])
                 
     # Less than operator
@@ -536,6 +552,8 @@ def main(Game, rows, width, generate, g_type):
                 i = 0
                 
             print(f"algorithm changed to {algorithm[i]}")
+
+            clock.tick(10)
             
         # reset grid
         elif function(buttons[2]):
@@ -575,6 +593,10 @@ def main(Game, rows, width, generate, g_type):
             grid = gm.generate_maze(grid)
 
         #clock.tick(20)
+            
+        elif (function(buttons[7])):
+
+            grid = gol.game_of_life(grid, lambda: draw(Game, grid, rows, width), clock)
                     
     pygame.quit()
 
