@@ -1,6 +1,6 @@
 # Pathfinding Algorithms Visualization
 
-This project implements various pathfinding algorithms and visualizes their operation on a grid. The algorithms included are Breadth-First Search (BFS), A* algorithm, Depth-First Search (DFS) for both weighted and unweighted graphs.
+This is a sandbox for you to implement and visualize anything and everything that requires a grid of squares. Already implemented features: Pathfinding visualization, maze generation and the game of life.
 
 ## Getting Started
 
