@@ -80,6 +80,13 @@ def return_neighbours(grid):
     
 # Save Grid
 def save_grid(grid):
+
+    for x in grid:
+        for square in x:
+
+            if not square.get_wall():
+                square.reset()
+
     # Grid object to save
     grid_to_save = grid  # Replace 'grid' with your actual grid object
 
